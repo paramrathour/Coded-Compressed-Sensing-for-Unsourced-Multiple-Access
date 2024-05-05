@@ -30,27 +30,28 @@ class ParityCheckOptimiser:
         # Define constraints
         self.constraints = [
             expected_tilde_L[-1] <= self.epsilon_tree,
-            # (1/cp.log(2)) * cp.sum([-cp.log(self.p[j]) for j in range(1,self.n)]) == self.M - self.B,
+            1 / cp.prod(self.p[1:]) == cp.exp(cp.log(2) * (self.M - self.B)),
             self.p >= 1/(2**self.J),
             self.p <= 1,
             self.p[0] == 1
         ]
+        print(self.constraints[1].is_dgp())
         # Define optimization problem
         problem = cp.Problem(self.objective, self.constraints)
     
         # Solve the problem
-        problem.solve(solver = cp.CLARABEL, gp='True')
+        problem.solve(solver = cp.CLARABEL, gp='True') # CLARABEL replaces ECOS solver as the default solver in future versions
 
         # Get optimal values
         optimal_p = self.p.value
-        optimal_value = problem.value
-        rounded_optimal_lengths = np.round(np.log2(1/optimal_p))
-        return optimal_p, optimal_value, rounded_optimal_lengths
+        optimal_objective_value = problem.value
+        optimal_lengths = np.round(np.log2(1 / optimal_p))
+        return optimal_lengths, optimal_p, optimal_objective_value
 
 if __name__ == "__main__":
     solver = ParityCheckOptimiser(constants.B, constants.n, constants.K, constants.J, constants.M, constants.EPSILON_TREE)
-    optimal_p, optimal_value, lengths = solver.solve()
+    lengths, p, objective_value = solver.solve()
 
-    print("Optimal p:", optimal_p)
-    print("Optimal objective value:", optimal_value)
-    print("Lengths", lengths)
+    print("Optimal lengths:", lengths)
+    print("Optimal p:", p)
+    print("Optimal objective value:", objective_value)
