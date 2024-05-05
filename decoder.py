@@ -1,14 +1,12 @@
 import numpy as np
 import scipy.linalg
-
-import math
+import pickle
 
 import constants
+from util import decimal_numbers_to_binary_vectors
+from encoder import run_encoding
 
-def decoder(Y, A, K, parity_lengths)
-    L = decoding_cs(Y, A)
-
-def decoding_cs(Y, A)
+def decoding_cs(Y, A):
     """
     Inputs
     Y - N/n×n matrix (2D-numpy array)
@@ -17,13 +15,54 @@ def decoding_cs(Y, A)
     """
     L = np.zeros((constants.n, constants.J, constants.K))
     for i in range(constants.n):
-        x = omp(A, y, constants.K)
+        print("Sub-block:", i)
+        x = omp(Y[:, i], A, constants.K)
         indices = np.where(x == 1)[0]
-        information_bits_all = [np.binary_repr(index, width = constants.J) for index in indices];
-        L[i] = np.array([np.array([int(digit) for digit in information_bits]) for information_bits in information_bits_all]).T
+        L[i] = decimal_numbers_to_binary_vectors(indices, constants.J)
     return L
 
-def omp(y, A, sparsity)
+def decoding_tree(L):
+    W = [L[i, :constants.J-constants.parity_lengths[i], :] for i in range(constants.n)]
+    P = [L[i, constants.J-constants.parity_lengths[i]:, :] for i in range(constants.n)]
+    for i in W:
+        print(i.shape)
+    print("and")
+    for i in P:
+        print(i.shape)
+    path = [0]
+    result = []
+
+    for i in range(constants.K):
+        decoding_tree_backtracking(W, P, [i], result)
+
+    if len(result) == 0:
+        print("Failure! Can't recover any messages")
+        return
+
+    messages = np.zeros((J, len(result)))
+    for i, r in enumerate(result):
+        messages[:, i] = [W[j][r[j]] for j in range(constants.n)]
+    return messages
+
+def decoding_tree_backtracking(W, P, path, result):
+    depth = len(path)
+    if depth == constants.n-1:
+        result.append(path[:])
+        return True
+
+    for i in range(constants.K):
+        path.append(i)
+        print("Checking path: ", path)
+        sub_blocks = [W[j][:, p] for j,p in enumerate(path)]
+        parity_bits = sum(constants.G[(j, depth-1)] @ sub_blocks[j] for j in range(depth)) % 2
+        if np.array_equal(parity_bits, P[depth][:, i]):
+            if decoding_tree_backtracking(W, P, path, result) == True:
+                return True
+        path.pop()
+
+    return False
+
+def omp(y, A, sparsity):
     """
     A modified version of OMP which returns a binary vector of appropriate sparsity
     Inputs
@@ -44,10 +83,16 @@ def omp(y, A, sparsity)
     x[T] = 1
     return x
 
-if __name__ == "__main__":
-    solver = ParityCheckOptimiser(constants.B, constants.n, constants.K, constants.J, constants.M, constants.EPSILON_TREE)
-    lengths, p, objective_value = solver.solve()
+def run_decoding():
+    messages_sent, Y = run_encoding()
+    L = decoding_cs(Y, constants.A)
+    # with open("data-L.pkl", 'wb') as file:
+    #     pickle.dump(L, file)
+    # with open("data-L.pkl", 'rb') as file:
+    #             L = pickle.load(file)
+    messages_received  = decoding_tree(L)
 
-    print("Optimal lengths:", lengths)
-    print("Optimal p:", p)
-    print("Optimal objective value:", objective_value)
+    print(messages_sent)
+    print(messages_received)
+if __name__ == "__main__":
+    run_decoding()
