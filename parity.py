@@ -31,7 +31,7 @@ def parityCheckOptimiser():
     
     # Solve the problem
     problem.solve(solver=cp.CLARABEL, gp=True)  # CLARABEL replaces ECOS solver as the default solver in future versions
-
+    assert(problem.status == 'optimal')
     # Get optimal values
     optimal_p = p.value
     optimal_objective_value = problem.value

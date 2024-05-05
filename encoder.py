@@ -14,7 +14,7 @@ accessible by constants.B
 """
 def generateMessages():
     messages_binary_vector = np.random.randint(2, size = (constants.B, constants.Ka))
-    messages_decimal_number = binary_vectors_to_decimal_numbers(messages_binary_vector)
+    # messages_decimal_number = binary_vectors_to_decimal_numbers(messages_binary_vector)
     # messages_decimal_number = np.random.randint(0, 2**constants.B, size = constants.Ka)
     # messages_binary_vector = decimal_numbers_to_binary_vectors(messages_decimal_number, constants.B)
     code_lengths = constants.J - constants.parity_lengths
