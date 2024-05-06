@@ -346,9 +346,13 @@ $\varepsilon_{\mathrm{tree}}$ & $\mathrm{E}[\bar{C}_{\mathrm{tree}}]$ & \text{Pa
 \caption{Error Probability is minimized when Parity Check Bits are Pushed to End, whereas\\ Average Computational Complexity is Least when equal parity-check bits are allocated per sub-block}
 \label{tab:my_table}
 \end{table}
-
 \end{frame}
-
+\begin{frame}{Trade-Offs}
+    \begin{itemize}
+    \item As $n$ increases, computational complexity decreases but the error probability increases 
+    \item In parity length optimisation, allocating parity bits towards the later stages of CCS improves performance at the expense of complexity
+\end{itemize}
+\end{frame}
 \begin{frame}{Results}{Simulation}
 For the mentioned parameter set,
     \begin{itemize}
