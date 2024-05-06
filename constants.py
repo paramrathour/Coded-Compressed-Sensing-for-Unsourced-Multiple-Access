@@ -24,6 +24,7 @@ N = BCH[0] * n
 # A = np.random.choice([-1,1], size = (N//n, 2**J))
 data = loadmat('BCH_matrix.mat')
 A = data['A1']
+A = 2*A-1;
 
 parity_lengths = None
 G = None
