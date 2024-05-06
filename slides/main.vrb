@@ -1,0 +1,11 @@
+\frametitle{Code Optimizations}\framesubtitle {Implementation}
+    \begin{itemize}
+        \item Principal Component Analysis (PCA)
+        \begin{itemize}
+            \item Eigenvector computation of $X^TX$ instead of the covariance matrix ($XX^T$)
+            \item \verb!numpy.linalg.eigh! instead to \verb!numpy.linalg.eig! to exploit the algorithms assuming symmetric input matrices
+        \end{itemize}
+        \item Extensive usage of \verb!numpy! objects and functions to facilitate multi-threading in \verb!numba!
+        \item \verb!os.environ[`OMP_NUM_THREADS'] = `16'! to increase number of parallel threads to 16
+        \item Ability to store and load saved learnt variables using \verb!pickle!
+    \end{itemize}
