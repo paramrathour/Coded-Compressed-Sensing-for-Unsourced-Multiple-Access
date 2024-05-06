@@ -11,7 +11,6 @@ Kd = 10
 K = Ka + Kd
 
 J = 15
-# J = 14
 M = n*J
 
 EPSILON_TREE = 0.0025

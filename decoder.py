@@ -104,11 +104,11 @@ def omp(y, A, sparsity):
 
 def run_decoding():
     messages_sent, Y = run_encoding()
-    # L = decoding_cs(Y)
-    # with open("data-L.pkl", 'wb') as file:
-    #     pickle.dump(L, file)
-    with open("data-L.pkl", 'rb') as file:
-        L = pickle.load(file)
+    L = decoding_cs(Y)
+    with open("data-L.pkl", 'wb') as file:
+        pickle.dump(L, file)
+    # with open("data-L.pkl", 'rb') as file:
+    #     L = pickle.load(file)
     messages_received_complete, messages_received_partial  = decoding_tree(L)
     print("Each message size", constants.B)
     print(messages_sent.shape[1], "messages sent", messages_sent)
